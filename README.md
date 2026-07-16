@@ -99,6 +99,16 @@ Copie o arquivo de exemplo para criar as variáveis do ambiente local:
 Copy-Item .env.example .env
 ```
 
+A aplicação usa as mesmas credenciais configuradas para o PostgreSQL no Docker Compose:
+
+* `DB_HOST`, com valor padrão `localhost`;
+* `DB_PORT`, com valor padrão `5432`;
+* `POSTGRES_DB`;
+* `POSTGRES_USER`;
+* `POSTGRES_PASSWORD`.
+
+Ao executar a aplicação fora do Docker Compose, disponibilize `POSTGRES_DB`, `POSTGRES_USER` e `POSTGRES_PASSWORD` como variáveis de ambiente.
+
 Inicie os serviços:
 
 ```powershell
@@ -123,6 +133,14 @@ O comando abaixo também remove o volume do PostgreSQL e apaga permanentemente o
 ```powershell
 docker compose down -v
 ```
+
+### Migrations do banco de dados
+
+O schema é gerenciado exclusivamente pelo Liquibase. O arquivo `src/main/resources/db/changelog/db.changelog-master.yaml` é o ponto de entrada das migrations, enquanto o Hibernate apenas valida o schema existente.
+
+As migrations futuras devem ser criadas em SQL formatado pelo Liquibase e incluídas no arquivo YAML mestre em ordem de execução. Cada arquivo SQL deve iniciar com `--liquibase formatted sql` e declarar seus changesets com `--changeset autor:identificador`.
+
+Migrations que já tenham sido executadas não devem ser alteradas. Uma nova migration deve ser criada para cada mudança posterior no schema.
 
 ## Status do projeto
 
