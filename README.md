@@ -88,8 +88,16 @@ O projeto ainda está em fase inicial de desenvolvimento. Nesta etapa, o ambient
 ### Requisitos
 
 * Git;
-* Docker;
-* Docker Compose.
+* Java 21;
+* Docker com Docker Compose.
+
+Não é necessário instalar o Maven globalmente. O repositório inclui o Maven Wrapper, que baixa e executa a versão adequada do Maven:
+
+```powershell
+.\mvnw.cmd --version
+```
+
+Em Linux ou macOS, use `./mvnw` no lugar de `.\mvnw.cmd` nos comandos deste documento.
 
 ### Configuração
 
@@ -115,12 +123,58 @@ Inicie os serviços:
 docker compose up -d
 ```
 
+Confirme que os containers estão em execução e que o PostgreSQL está saudável:
+
+```powershell
+docker compose ps
+```
+
 O PostgreSQL ficará disponível para ferramentas instaladas na máquina em `localhost:5432`. Entre containers da mesma rede do Compose, a conexão deverá usar `postgres:5432`.
 
 O Adminer ficará disponível em [http://localhost:8081](http://localhost:8081). Para acessar o banco, selecione PostgreSQL e use:
 
 * servidor: `postgres`;
 * usuário, senha e banco: valores definidos no arquivo `.env`.
+
+### Execução da API
+
+Disponibilize no terminal as mesmas credenciais definidas no `.env`:
+
+```powershell
+$env:POSTGRES_DB = "pricewatch"
+$env:POSTGRES_USER = "pricewatch"
+$env:POSTGRES_PASSWORD = "pricewatch"
+```
+
+Se você alterou o `.env`, use os valores correspondentes nos comandos acima. Em seguida, inicie a aplicação com o Maven Wrapper:
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+Com a API e o PostgreSQL em execução, consulte o health check:
+
+```powershell
+Invoke-RestMethod http://localhost:8080/actuator/health
+```
+
+A resposta deve informar o status `UP`. O Actuator expõe somente os endpoints `health` e `info`.
+
+### Testes e build
+
+Execute os testes automatizados:
+
+```powershell
+.\mvnw.cmd test
+```
+
+Execute a validação completa, incluindo limpeza, testes e empacotamento da aplicação:
+
+```powershell
+.\mvnw.cmd clean verify
+```
+
+Os testes de integração usam Testcontainers e, por isso, exigem que o Docker esteja em execução.
 
 Para encerrar os serviços sem apagar os dados:
 
@@ -134,7 +188,17 @@ O comando abaixo também remove o volume do PostgreSQL e apaga permanentemente o
 docker compose down -v
 ```
 
-### Migrations do banco de dados
+## Módulos da aplicação
+
+O monólito modular está organizado em três módulos de domínio:
+
+* `product`: concentra o catálogo de produtos e seus dados, incluindo o preço desejado quando essa funcionalidade for implementada;
+* `store`: concentra as lojas confiáveis e as associações entre produtos e lojas;
+* `pricing`: concentra o registro histórico e a análise dos preços observados.
+
+Nesta etapa de fundação, os módulos definem somente as fronteiras arquiteturais. Nenhuma API de produto, loja ou preço está disponível ainda.
+
+## Migrations do banco de dados
 
 O schema é gerenciado exclusivamente pelo Liquibase. O arquivo `src/main/resources/db/changelog/db.changelog-master.yaml` é o ponto de entrada das migrations, enquanto o Hibernate apenas valida o schema existente.
 
