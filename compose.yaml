@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: "${POSTGRES_DB:?Copie .env.example para .env}"
+      POSTGRES_USER: "${POSTGRES_USER:?Copie .env.example para .env}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Copie .env.example para .env}"
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pricewatch_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  adminer:
+    image: adminer:5.4.2
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    ports:
+      - "127.0.0.1:8081:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pricewatch_postgres_data:

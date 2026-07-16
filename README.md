@@ -83,17 +83,46 @@ O PriceWatch ajuda o usuário a tomar decisões de compra mais conscientes, ofer
 
 ## Como começar a usar
 
-O projeto ainda está em fase inicial de desenvolvimento.
+O projeto ainda está em fase inicial de desenvolvimento. Nesta etapa, o ambiente local disponibiliza PostgreSQL e Adminer por meio do Docker Compose.
 
-Quando a estrutura técnica estiver disponível, o ambiente poderá ser iniciado localmente utilizando Docker Compose.
-
-Os requisitos previstos são:
+### Requisitos
 
 * Git;
 * Docker;
 * Docker Compose.
 
-A documentação de instalação, configuração das variáveis de ambiente e execução será adicionada conforme a base técnica do projeto for implementada.
+### Configuração
+
+Copie o arquivo de exemplo para criar as variáveis do ambiente local:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Inicie os serviços:
+
+```powershell
+docker compose up -d
+```
+
+O PostgreSQL ficará disponível para ferramentas instaladas na máquina em `localhost:5432`. Entre containers da mesma rede do Compose, a conexão deverá usar `postgres:5432`.
+
+O Adminer ficará disponível em [http://localhost:8081](http://localhost:8081). Para acessar o banco, selecione PostgreSQL e use:
+
+* servidor: `postgres`;
+* usuário, senha e banco: valores definidos no arquivo `.env`.
+
+Para encerrar os serviços sem apagar os dados:
+
+```powershell
+docker compose down
+```
+
+O comando abaixo também remove o volume do PostgreSQL e apaga permanentemente os dados locais:
+
+```powershell
+docker compose down -v
+```
 
 ## Status do projeto
 
