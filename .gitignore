@@ -1,2 +1,22 @@
 .env
 target/
+
+# Logs
+*.log
+logs/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+
+# Eclipse and Spring Tool Suite
+.classpath
+.project
+.settings/
+.factorypath
+.springBeans
+.sts4-cache/
+
+# Visual Studio Code
+.vscode/
