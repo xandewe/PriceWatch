@@ -37,13 +37,15 @@ class PriceWatchModularityTests {
 	@Test
 	void rejectsCyclicModuleDependencies() {
 		assertThatThrownBy(() -> testModulesOf(CycleApplication.class).verify())
-				.isInstanceOf(Violations.class);
+				.isInstanceOf(Violations.class)
+				.hasMessageContaining("Cycle detected");
 	}
 
 	@Test
 	void rejectsAccessToAnotherModulesInternalTypes() {
 		assertThatThrownBy(() -> testModulesOf(InternalAccessApplication.class).verify())
-				.isInstanceOf(Violations.class);
+				.isInstanceOf(Violations.class)
+				.hasMessageContaining("InternalType");
 	}
 
 	private static ApplicationModules testModulesOf(Class<?> rootType) {
