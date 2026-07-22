@@ -1,5 +1,6 @@
 .env
 target/
+.worktrees/
 
 # Logs
 *.log
