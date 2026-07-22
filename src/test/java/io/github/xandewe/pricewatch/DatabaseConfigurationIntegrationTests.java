@@ -36,7 +36,7 @@ class DatabaseConfigurationIntegrationTests {
 	}
 
 	@Test
-	void createsOnlyLiquibaseControlTables() {
+	void createsMvpDomainTablesThroughLiquibase() {
 		List<String> tableNames = jdbcTemplate.queryForList("""
 				SELECT table_name
 				FROM information_schema.tables
@@ -44,7 +44,13 @@ class DatabaseConfigurationIntegrationTests {
 				ORDER BY table_name
 				""", String.class);
 
-		assertThat(tableNames).containsExactly("databasechangelog", "databasechangeloglock");
+		assertThat(tableNames).containsExactly(
+				"databasechangelog",
+				"databasechangeloglock",
+				"prices",
+				"product_stores",
+				"products",
+				"stores");
 	}
 
 	@Test
