@@ -196,11 +196,13 @@ O monólito modular está organizado em três módulos de domínio:
 * `store`: concentra as lojas confiáveis e as associações entre produtos e lojas;
 * `pricing`: concentra o registro histórico e a análise dos preços observados.
 
-Nesta etapa de fundação, os módulos definem somente as fronteiras arquiteturais. Nenhuma API de produto, loja ou preço está disponível ainda.
+Os módulos já contêm as entidades persistidas de produto, loja, anúncio e histórico de preços. Nenhuma API de produto, loja ou preço está disponível ainda.
 
 ## Migrations do banco de dados
 
 O schema é gerenciado exclusivamente pelo Liquibase. O arquivo `src/main/resources/db/changelog/db.changelog-master.yaml` é o ponto de entrada das migrations, enquanto o Hibernate apenas valida o schema existente.
+
+A migration inicial do domínio cria as tabelas `products`, `stores`, `product_stores` e `prices`, incluindo seus relacionamentos, constraints e índices. Os timestamps do domínio são representados por `Instant` na aplicação e armazenados como `timestamp with time zone` no PostgreSQL para preservar o instante em UTC.
 
 As migrations futuras devem ser criadas em SQL formatado pelo Liquibase e incluídas no arquivo YAML mestre em ordem de execução. Cada arquivo SQL deve iniciar com `--liquibase formatted sql` e declarar seus changesets com `--changeset autor:identificador`.
 
