@@ -182,6 +182,63 @@ class DomainSchemaIntegrationTests {
 				.isInstanceOf(DataIntegrityViolationException.class);
 	}
 
+	@ParameterizedTest
+	@ValueSource(strings = {"AVAILABLE", "UNAVAILABLE", "UNKNOWN"})
+	void acceptsEverySupportedAvailability(String availability) {
+		UUID listingId = insertListingPrerequisites();
+
+		insertPrice(
+				listingId,
+				new BigDecimal("4299.90"),
+				availability,
+				Instant.parse("2026-07-22T12:00:00Z"));
+
+		Integer priceCount = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM prices WHERE product_store_id = ?",
+				Integer.class,
+				listingId);
+		assertThat(priceCount).isOne();
+	}
+
+	@Test
+	void preventsDeletingAProductWithListings() {
+		UUID productId = insertProduct("notebook", null);
+		UUID storeId = insertStore("trusted-store");
+		insertProductStore(productId, storeId, "https://store.example/notebook", true);
+
+		assertThatThrownBy(() -> jdbcTemplate.update(
+				"DELETE FROM products WHERE id = ?",
+				productId))
+				.isInstanceOf(DataIntegrityViolationException.class);
+	}
+
+	@Test
+	void preventsDeletingAStoreWithListings() {
+		UUID productId = insertProduct("notebook", null);
+		UUID storeId = insertStore("trusted-store");
+		insertProductStore(productId, storeId, "https://store.example/notebook", true);
+
+		assertThatThrownBy(() -> jdbcTemplate.update(
+				"DELETE FROM stores WHERE id = ?",
+				storeId))
+				.isInstanceOf(DataIntegrityViolationException.class);
+	}
+
+	@Test
+	void preventsDeletingAListingWithPriceHistory() {
+		UUID listingId = insertListingPrerequisites();
+		insertPrice(
+				listingId,
+				new BigDecimal("4299.90"),
+				"AVAILABLE",
+				Instant.parse("2026-07-22T12:00:00Z"));
+
+		assertThatThrownBy(() -> jdbcTemplate.update(
+				"DELETE FROM product_stores WHERE id = ?",
+				listingId))
+				.isInstanceOf(DataIntegrityViolationException.class);
+	}
+
 	@Test
 	void preservesEveryPriceRecordedForAListing() {
 		UUID listingId = insertListingPrerequisites();
