@@ -56,6 +56,7 @@ public class Price {
 			Availability availability,
 			String note,
 			Instant recordedAt) {
+		productStore.ensureStoreActive();
 		this.productStore = productStore;
 		this.amount = amount;
 		this.availability = availability;

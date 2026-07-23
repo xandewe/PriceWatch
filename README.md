@@ -196,7 +196,26 @@ O monólito modular está organizado em três módulos de domínio:
 * `store`: concentra as lojas confiáveis e as associações entre produtos e lojas;
 * `pricing`: concentra o registro histórico e a análise dos preços observados.
 
-Os módulos já contêm as entidades persistidas de produto, loja, anúncio e histórico de preços. Nenhuma API de produto, loja ou preço está disponível ainda.
+Os módulos já contêm as entidades persistidas de produto, loja, anúncio e histórico de preços. A API de gestão de lojas está disponível; as APIs de produto, anúncio e preço ainda não foram implementadas.
+
+## API de lojas
+
+A gestão de lojas está disponível nos seguintes endpoints:
+
+```text
+POST   /api/v1/stores
+GET    /api/v1/stores
+GET    /api/v1/stores/{storeId}
+PUT    /api/v1/stores/{storeId}
+DELETE /api/v1/stores/{storeId}
+PATCH  /api/v1/stores/{storeId}/restore
+```
+
+O cadastro e a atualização recebem `name` e o campo opcional `websiteUrl`. O nome é limpo antes de ser armazenado e sua comparação para duplicidade ignora caixa, espaços nas extremidades e múltiplos espaços internos. A URL, quando informada, deve usar HTTP ou HTTPS.
+
+A listagem aceita os parâmetros `page`, `size`, `sort`, `direction`, `search` e `status`. A página padrão é `0`, o tamanho padrão é `20` e o tamanho permitido varia de `1` a `100`. O status aceita `ACTIVE`, `INACTIVE` ou `ALL` e, quando omitido, retorna somente lojas ativas. Os campos de ordenação aceitos são `name`, `websiteUrl`, `active`, `createdAt` e `updatedAt`.
+
+O `DELETE` realiza exclusão lógica, desativando a loja e preenchendo `deletedAt`. O `PATCH` de restauração reativa a loja e limpa esse timestamp. Anúncios e preços relacionados não são removidos.
 
 ## Migrations do banco de dados
 

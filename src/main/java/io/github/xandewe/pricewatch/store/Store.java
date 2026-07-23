@@ -52,11 +52,57 @@ public class Store {
 		this.websiteUrl = websiteUrl;
 	}
 
+	public void update(String name, String normalizedName, String websiteUrl) {
+		this.name = name;
+		this.normalizedName = normalizedName;
+		this.websiteUrl = websiteUrl;
+	}
+
+	public void deactivate(Instant deletionTime) {
+		this.active = false;
+		this.deletedAt = deletionTime;
+	}
+
+	public void restore() {
+		this.active = true;
+		this.deletedAt = null;
+	}
+
+	public void ensureActive() {
+		if (!active) {
+			throw new InactiveStoreException();
+		}
+	}
+
 	public UUID getId() {
 		return id;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public String getNormalizedName() {
+		return normalizedName;
+	}
+
+	public String getWebsiteUrl() {
+		return websiteUrl;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
 	public Instant getCreatedAt() {
 		return createdAt;
+	}
+
+	public Instant getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public Instant getDeletedAt() {
+		return deletedAt;
 	}
 }
