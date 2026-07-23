@@ -59,6 +59,7 @@ public class ProductStore {
 	}
 
 	public ProductStore(Product product, Store store, String url, String normalizedUrl, String externalCode) {
+		store.ensureActive();
 		this.product = product;
 		this.store = store;
 		this.url = url;
@@ -76,6 +77,10 @@ public class ProductStore {
 
 	public Store getStore() {
 		return store;
+	}
+
+	public void ensureStoreActive() {
+		store.ensureActive();
 	}
 
 	public Instant getCreatedAt() {
